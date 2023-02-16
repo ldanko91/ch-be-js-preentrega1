@@ -18,9 +18,9 @@ class CartManager {
 
   addCart = async (cartProds) => {
     let prevCarts = await fs.promises.readFile(this.path, "utf-8");
-    let aux = JSON.parse(cont);
+    let aux = JSON.parse(prevCarts);
     this.carts = aux;
-    let newCart = { products: [cartProds], id: CartManager.addId() };
+    let newCart = { products: cartProds, id: CartManager.addId() };
     this.carts.push(newCart);
 
     await fs.promises.writeFile(this.path, JSON.stringify(this.carts));
@@ -58,15 +58,11 @@ class CartManager {
       (prod) => prod.id === parseInt(pId)
     );
     if (this.carts[updCartIndex].some((prod) => prod.id === parseInt(pId))) {
-      this.carts[updCartIndex].products[updProdIndex].quantity =
-        +updatedProd.quantity;
+      this.carts[updCartIndex].products[updProdIndex].quantity =+ updatedProd.quantity;
     } else {
       this.carts[updCartIndex].push(updatedProd);
     }
-    let update = await fs.promises.writeFile(
-      this.path,
-      JSON.stringify(this.carts)
-    );
+    let update = await fs.promises.writeFile(this.path,JSON.stringify(this.carts));
   };
 
   deleteCartById = async (id) => {

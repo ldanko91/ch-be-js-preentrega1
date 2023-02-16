@@ -15,7 +15,7 @@ routerCart.get("/", async (req, res) => {
 
 routerCart.get("/:cid", async (req, res) => {
   const cId = req.params.cid;
-  let cart = await productManager.getCartByID();
+  let cart = await cartManager.getCartById(cId);
   if (cart) {
     res.send(cart);
   } else {
@@ -26,7 +26,6 @@ routerCart.get("/:cid", async (req, res) => {
 routerCart.post("/", async (req, res) => {
   let newCart = await cartManager.addCart(req.body);
   res.send(newCart);
-  res.send("Producto Cargado");
 });
 
 routerCart.post("/:cid/products/:pid", async (req, res) => {
@@ -34,7 +33,6 @@ routerCart.post("/:cid/products/:pid", async (req, res) => {
   const pId = req.params.pid;
   let newCart = await cartManager.addCart(cId, pId, req.body);
   res.send(newCart);
-  res.send("Carrito actualizado");
 });
 
 export default routerCart;
