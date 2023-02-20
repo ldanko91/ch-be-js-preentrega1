@@ -9,34 +9,27 @@ class ProductManager extends Product {
     this.path = "./src/models/products.txt";
   }
 
-  static addId() {
-    if (this.id) {
-      this.id++;
-    } else {
-      this.id = 1;
-    }
-    return this.id;
-  }
-
   addProduct = async ({title, description, price, code, stock, status, category, thumbnail}) => {
     let cont = await fs.promises.readFile(this.path, "utf-8");
     let aux = JSON.parse(cont);
     this.products = aux;
-
+    let prevIds = this.products.map(prod => parseInt(prod.id))
+    this.id = (Math.max(...prevIds) + 1)
+    
     if (!title || !description || !price || !thumbnail || !code || !stock || !status || !category) {
-      console.log("All fields are required");
-      return;
+      let errorFields = "All fields are required";
+      return errorFields;
     }
 
     for (let i = 0; i < this.products.length; i++) {
-      if (this.products[i].code === code) {
-        console.log("Code must be unique");
-        return;
-      }
+      if (this.products[i].code == code) {
+        let errorCode = "Code must be unique";
+        return errorCode;
+      } 
     }
 
     this.products.push({
-      id: ProductManager.addId(),
+      id: this.id,
       title,
       description,
       price,
@@ -48,6 +41,8 @@ class ProductManager extends Product {
     });
 
     await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+    let addedProd = "Product uploaded successfully";
+    return addedProd
   };
 
   getProducts = async () => {
@@ -67,16 +62,17 @@ class ProductManager extends Product {
         return this.products[i];
       }
     }
-    console.log("Not found");
+    let prodNotFound = "Product not found"
+    return prodNotFound;
   };
 
-  updateProductById = async ({id, title, description, price, code, stock, status, category, thumbnail}) => {
+  updateProductById = async (id, {title, description, price, code, stock, status, category, thumbnail}) => {
     let updatedProd = {id, title, description, price, code, stock, status, category, thumbnail};
     console.log(updatedProd)
     let cont = await fs.promises.readFile(this.path, "utf-8");
     let aux = await JSON.parse(cont);
     this.products = aux;
-    let updProdIndex = this.products.findIndex((product) => product.id === parseInt(id));
+    let updProdIndex = this.products.findIndex(product => product.id === id);
     this.products.splice(updProdIndex, 1);
     this.products.push(updatedProd);
 
@@ -88,12 +84,12 @@ class ProductManager extends Product {
     let aux = await JSON.parse(cont);
     this.products = aux;
     let delProdIndex = this.products.findIndex((product) => product.id === parseInt(id));
-    console.log(`Se eliminará el producto con ID: ${id}`),
       this.products.splice(delProdIndex, 1);
 
     let update = await fs.promises.writeFile(this.path, JSON.stringify(this.products));
   };
 }
+
 
 //                                     title,            description,                       price,     code,     stock,     status,    category,   thumbnail
 // const load = async () => {

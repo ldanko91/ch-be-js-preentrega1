@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { pid } from "process";
 
 class CartManager {
   constructor() {
@@ -7,20 +8,13 @@ class CartManager {
     this.path = "./src/models/carts.txt";
   }
 
-  static addId() {
-    if (this.id) {
-      this.id++;
-    } else {
-      this.id = 1;
-    }
-    return this.id;
-  }
-
   addCart = async (cartProds) => {
     let prevCarts = await fs.promises.readFile(this.path, "utf-8");
     let aux = JSON.parse(prevCarts);
     this.carts = aux;
-    let newCart = { products: cartProds, id: CartManager.addId() };
+    let prevIds = this.carts.map(cart => parseInt(cart.id))
+    this.id = (Math.max(...prevIds) + 1)
+    let newCart = { products: cartProds, id: this.id };
     this.carts.push(newCart);
 
     await fs.promises.writeFile(this.path, JSON.stringify(this.carts));
@@ -43,26 +37,29 @@ class CartManager {
         return this.carts[i];
       }
     }
-    console.log("Carrrito no encontrado");
+    let cartNotFound = "Cart not found"
+    return cartNotFound;
   };
 
   updateCartById = async (cId, pId, newprod) => {
-    let updatedProd = { id: pId, quantity: newprod.quantity };
+    let updatedProd = { id: pId, quantity: parseInt(newprod.quantity) };
     let cont = await fs.promises.readFile(this.path, "utf-8");
     let aux = await JSON.parse(cont);
     this.carts = aux;
-    let updCartIndex = this.carts.findIndex(
-      (cart) => cart.id === parseInt(cId)
-    );
-    let updProdIndex = this.carts[updCartIndex].findIndex(
-      (prod) => prod.id === parseInt(pId)
-    );
-    if (this.carts[updCartIndex].some((prod) => prod.id === parseInt(pId))) {
-      this.carts[updCartIndex].products[updProdIndex].quantity =+ updatedProd.quantity;
+    let mssgUpdProd = `The product with ID ${pId} was updated successfully`
+    let updCartIndex = this.carts.findIndex(cart => cart.id == cId);
+    let updCartProds = this.carts[updCartIndex].products;
+    let updProdIndex = updCartProds.findIndex(prod => prod.id == pId)
+
+    if (updCartProds.some(prod => prod.id == pId)) {
+      this.carts[updCartIndex].products[updProdIndex].quantity += updatedProd.quantity;
+      
     } else {
-      this.carts[updCartIndex].push(updatedProd);
+      this.carts[updCartIndex].products.push(updatedProd);
     }
+
     let update = await fs.promises.writeFile(this.path,JSON.stringify(this.carts));
+    return mssgUpdProd
   };
 
   deleteCartById = async (id) => {
@@ -70,7 +67,6 @@ class CartManager {
     let aux = await JSON.parse(cont);
     this.carts = aux;
     let delProdIndex = this.carts.findIndex((cart) => cart.id === id);
-    console.log(`Se eliminará el carrito con ID: ${id}`),
       this.carts.splice(delProdIndex, 1);
 
     let update = await fs.promises.writeFile(

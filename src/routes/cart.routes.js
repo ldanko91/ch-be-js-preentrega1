@@ -19,7 +19,7 @@ routerCart.get("/:cid", async (req, res) => {
   if (cart) {
     res.send(cart);
   } else {
-    res.send(`El carrito no existe`);
+    res.send(`Cart not found`);
   }
 });
 
@@ -29,9 +29,9 @@ routerCart.post("/", async (req, res) => {
 });
 
 routerCart.post("/:cid/products/:pid", async (req, res) => {
-  const cId = req.params.cid;
-  const pId = req.params.pid;
-  let newCart = await cartManager.addCart(cId, pId, req.body);
+  const cId = parseInt(req.params.cid);
+  const pId = parseInt(req.params.pid);
+  let newCart = await cartManager.updateCartById(cId, pId, req.body);
   res.send(newCart);
 });
 

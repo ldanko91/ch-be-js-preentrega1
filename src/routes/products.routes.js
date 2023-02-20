@@ -19,26 +19,25 @@ routerProduct.get("/:pid", async (req, res) => {
   if (product) {
     res.send(product);
   } else {
-    res.send(`El producto no existe`);
+    res.send(`Product not found`);
   }
 });
 
 routerProduct.post("/", async (req, res) => {
   let uploadProd = await productManager.addProduct(req.body);
   res.send(uploadProd);
-  // res.send("Producto Cargado");
 });
 
 routerProduct.delete("/:pid", async (req, res) => {
   const pId = req.params.pid;
   let dropProd = await productManager.deleteProductById(pId);
-  res.send(`El producto con id ${pId} ha sido eliminado`);
+  res.send(`The product with ID ${pId} was deleted successfully`);
 });
 
-routerProduct.put("/:pid", async (req, res) => {
-  const pId = req.params.pid;
-  let updProduct = await productManager.updateProductById(req.body);
-  res.send(`El producto con id ${pId} ha sido actualizado`);
+routerProduct.post("/:pid", async (req, res) => {
+  const pId = parseInt(req.params.pid);
+  let updProduct = await productManager.updateProductById(pId,req.body);
+  res.send(`The product with ID ${pId} was updated successfully`);
 });
 
 export default routerProduct;
