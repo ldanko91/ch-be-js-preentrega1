@@ -13,8 +13,9 @@ class ProductManager extends Product {
     let cont = await fs.promises.readFile(this.path, "utf-8");
     let aux = JSON.parse(cont);
     this.products = aux;
+    if (this.products.length < 1) {this.id = 1} else {
     let prevIds = this.products.map(prod => parseInt(prod.id))
-    this.id = (Math.max(...prevIds) + 1)
+    this.id = (Math.max(...prevIds) + 1)};
     
     if (!title || !description || !price || !thumbnail || !code || !stock || !status || !category) {
       let errorFields = "All fields are required";
@@ -68,7 +69,6 @@ class ProductManager extends Product {
 
   updateProductById = async (id, {title, description, price, code, stock, status, category, thumbnail}) => {
     let updatedProd = {id, title, description, price, code, stock, status, category, thumbnail};
-    console.log(updatedProd)
     let cont = await fs.promises.readFile(this.path, "utf-8");
     let aux = await JSON.parse(cont);
     this.products = aux;

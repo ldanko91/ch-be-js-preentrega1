@@ -34,7 +34,7 @@ routerProduct.delete("/:pid", async (req, res) => {
   res.send(`The product with ID ${pId} was deleted successfully`);
 });
 
-routerProduct.post("/:pid", async (req, res) => {
+routerProduct.put("/:pid", async (req, res) => {
   const pId = parseInt(req.params.pid);
   let updProduct = await productManager.updateProductById(pId,req.body);
   res.send(`The product with ID ${pId} was updated successfully`);
