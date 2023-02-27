@@ -28,11 +28,11 @@ routerCart.post("/", async (req, res) => {
   res.send(newCart);
 });
 
-routerCart.put("/:cid/product/:pid", async (req, res) => {
+routerCart.post("/:cid/product/:pid", async (req, res) => {
   const cId = parseInt(req.params.cid);
   const pId = parseInt(req.params.pid);
-  let newCart = await cartManager.updateCartById(cId, pId, req.body);
-  res.send(newCart);
+  let updCart = await cartManager.updateCartById(cId, pId);
+  res.send(updCart);
 });
 
 export default routerCart;
